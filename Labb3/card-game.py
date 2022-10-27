@@ -1,7 +1,28 @@
 import random
+from enum import Enum
 
-suit = ["Diamonds", "Clubs", "Hearts", "Spades"]
-value = ["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"]
+class Value(Enum):
+    Ace = 1
+    Deuce = 2
+    Three = 3
+    Four = 4
+    Five = 5
+    Six = 6
+    Seven = 7
+    Eight = 8
+    Nine = 9
+    Ten = 10
+    Jack = 11
+    Queen = 12
+    King = 13
+
+
+class Suit(Enum):
+    Clubs = 1
+    Hearts = 2
+    Diamonds = 3
+    Spades = 4
+
 
 class Card:
 
@@ -14,8 +35,9 @@ class Card:
        return self._value
     def getSuit(self):
        return self._suit
+
     def __str__(self):
-       return "{} of {}".format(value[self.getValue], suit[self.getSuit])
+       return "{} of {}".format(Value(self.getValue()).name, Suit(self.getSuit()).name)
     
 class CardDeck:
    def __init__(self):
@@ -37,13 +59,9 @@ class CardDeck:
             self.cards.append(Card(suits, values))
 
 
-"""
+
 deck = CardDeck()
 deck.shuffle()
 while deck.size()>0:
    card = deck.getCard()
-   print("Card {} has value {}".format(card, card.getValue()))"""
-
-deck = CardDeck()
-card = Card(1,1)
-print(card.__str__())
+   print("Card {} has value {}".format(card, card.getValue()))
