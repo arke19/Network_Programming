@@ -33,6 +33,7 @@ class Card:
 
     def getValue(self):
        return self._value
+       
     def getSuit(self):
        return self._suit
 
