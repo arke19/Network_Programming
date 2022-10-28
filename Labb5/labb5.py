@@ -8,67 +8,56 @@ client_score = 0
 
 moves = ['R', 'P', 'S']
 
+def checkWinner(server_move, client_move):
+    global server_score
+    global client_score
+    if server_move == client_move:
+        pass
+    elif server_move == "R" and client_move == "P" or server_move == "S" and client_move == "R":
+        client_score += 1
+    elif server_move == "P" and client_move == "R" or server_move == "R" and client_move == "S":
+        server_score += 1
+
+
+
+def play_round(socket_connection):
+    while True:
+        if server_score == 1:
+            print((' You won with: {} to {}'.format(server_score, client_score)))
+            break
+        elif client_score == 1:
+            print((' You lost with: {} to {}'.format(server_score, client_score)))
+            break
+        input_move = input(
+                ('({},{}) Your move: '.format(server_score, client_score)))
+        your_move = input_move[-1]
+        socket_connection.sendall(bytearray(your_move, 'ascii'))
+        data = socket_connection.recv(1024)
+        opponent_move = str(data.decode('ASCII'))
+
+        checkWinner(your_move, opponent_move)
+
+
 
 def server():
-
-    outcome = [' You lost! current score is:',
-               ' You won! current score is:',
-               ' Its a draw! current score is:']
-
     server_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_STREAM)
     server_socket.bind((host, port))
     server_socket.listen(2)
 
-    welcome_message = "Welcome to rock, paper, sciccors start by inputing R,P or S. First to 10 points win"
 
     conn, address = server_socket.accept()
     print("Connection from: " + str(address))
-    conn.sendall(bytearray(welcome_message, 'ascii'))
 
-    while True:
-        data = conn.recv(1024)
-        if not data:
-            break
-        client_message = str(data.decode('ASCII'))
-        if client_message in moves:
-            server_answer = input(
-                ('({},{}) Your move: '.format(server_score, client_score)))
-            server_move = server_answer[-1]
-            if server_move == client_message:
-                print(outcome[3])
-                conn.send(outcome[3].encode)
-            elif server_move == "R" and client_message == "P" or server_move == "S" and client_message == "R":
-                client_score += 1
-                print(outcome[1])
-                conn.send(outcome[2].encode)
-            else:
-                server_score += 1
-                print(outcome[2])
-                conn.send(outcome[1].encode)
-        #conn.send(data.encode())
+    play_round(conn)
 
 
 def client():
     client_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_STREAM)
     client_socket.connect((host, port))
-
-    while True:
-        #client_socket.send(message.encode())
-        data = client_socket.recv(1024).decode()
-
-        print('Server sent: ' + data)
-        message = input(
-            ('({},{}) Your move: '.format(server_score, client_score)))
-        client_move = message[-1]
-        while client_move not in moves:
-            print("wrong input!")
-            print(client_move)
-            client_move = input(
-                ('({},{}) Your move: '.format(server_score, client_score)))
-        else:
-          client_socket.send(client_move.encode())
+    
+    play_round(client_socket)
 
 
 if __name__ == "__main__":

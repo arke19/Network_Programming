@@ -55,7 +55,8 @@ class CardDeck:
        return len(self.cards)
        
    def reset(self):
-      for values in range(1,14):
+       self.cards = []
+       for values in range(1,14):
          for suits in range(1,5):
             self.cards.append(Card(suits, values))
 
