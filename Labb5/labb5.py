@@ -3,34 +3,41 @@ import socket
 host = '127.0.0.1'
 port = 60003
 
-server_score = 0
-client_score = 0
+player_one = 0
+player_two = 0
 
 moves = ['R', 'P', 'S']
 
 def checkWinner(server_move, client_move):
-    global server_score
-    global client_score
+    global player_one
+    global player_two
     if server_move == client_move:
         pass
     elif server_move == "R" and client_move == "P" or server_move == "S" and client_move == "R":
-        client_score += 1
+        player_two += 1
     elif server_move == "P" and client_move == "R" or server_move == "R" and client_move == "S":
-        server_score += 1
+        player_one += 1
 
 
 
 def play_round(socket_connection):
     while True:
-        if server_score == 1:
-            print((' You won with: {} to {}'.format(server_score, client_score)))
+        if player_one == 10:
+            print((' You won with: {} to {}'.format(player_one, player_two)))
             break
-        elif client_score == 1:
-            print((' You lost with: {} to {}'.format(server_score, client_score)))
+        elif player_two == 10:
+            print((' You lost with: {} to {}'.format(player_one, player_two)))
             break
         input_move = input(
-                ('({},{}) Your move: '.format(server_score, client_score)))
+                ('({},{}) Your move: '.format(player_one, player_two)))
         your_move = input_move[-1]
+            
+        while your_move not in moves:
+            print("wrong input. R, S or P are valid inputs")
+            input_move = input(
+                ('({},{}) Your move: '.format(player_one, player_two)))
+            your_move = input_move[-1]
+
         socket_connection.sendall(bytearray(your_move, 'ascii'))
         data = socket_connection.recv(1024)
         opponent_move = str(data.decode('ASCII'))
@@ -68,4 +75,4 @@ if __name__ == "__main__":
     elif user_input == "c":
         client()
     else:
-        print("wrong input enter 'server' or 'client'")
+        print("wrong input enter 's' or 'c'")
