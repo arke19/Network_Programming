@@ -10,21 +10,19 @@ while True:
     tup = select.select(listOfSockets, [], [])
     sock = tup[0][0]
     if sock == sockL:
-        pass
-    # TODO: A new clients connects.
-    # call (sockClient, addr) = sockL.accept() and take care of the new client
-    # add the new socket to listOfSockets
-    # notify all other clients about the new client
+        (sockClient, addr) = sockL.accept()
+        listOfSockets.append(sockClient)
+        for sockets in range(1,len(listOfSockets)):
+                    listOfSockets[sockets].sendall(bytearray('Client: ' + str(sockClient.getpeername()) + ' has connected\n', 'ascii'))
+
     else:
-        # Connected clients send data or are disconnecting...
         data = sock.recv(2048)
-    if not data:
-      pass
-    # TODO: A client disconnects
-    # close the socket object and remove from listOfSockets
-    # notify all other clients about the disconnected client
-    else:
-        pass
-    # TODO: A client sends a message
-    # data is a message from a client
-    # send the data to all clients
+        if not data:
+            for sockets in range(1,len(listOfSockets)):
+                listOfSockets[sockets].sendall(bytearray('Client: ' + str(sockClient.getpeername()) + ' has disconnected\n', 'ascii'))
+            listOfSockets.remove(sockClient)
+            sockClient.close()
+        else:
+            for sockets in range(1,len(listOfSockets)):
+                    listOfSockets[sockets].sendall(bytearray(str(sockClient.getpeername()) + ': ' + data.decode('ascii'), 'ascii'))
+
