@@ -6,23 +6,21 @@ sockL.bind(("", port))
 sockL.listen(1)
 listOfSockets = [sockL]
 print("Listening on port {}".format(port))
+def send_message(addr, message):
+    for sockets in range(1,len(listOfSockets)):
+            listOfSockets[sockets].sendall(bytearray('Client: {} {}'.format(addr, message), 'ascii'))
 while True:
     tup = select.select(listOfSockets, [], [])
     sock = tup[0][0]
     if sock == sockL:
         (sockClient, addr) = sockL.accept()
         listOfSockets.append(sockClient)
-        for sockets in range(1,len(listOfSockets)):
-                    listOfSockets[sockets].sendall(bytearray('Client: ' + str(sockClient.getpeername()) + ' has connected\n', 'ascii'))
-
+        send_message(addr, ' has connected\n')
     else:
         data = sock.recv(2048)
         if not data:
-            for sockets in range(1,len(listOfSockets)):
-                listOfSockets[sockets].sendall(bytearray('Client: ' + str(sockClient.getpeername()) + ' has disconnected\n', 'ascii'))
+            send_message(str(sockClient.getpeername()), ' has disconnected\n')
             listOfSockets.remove(sockClient)
             sockClient.close()
         else:
-            for sockets in range(1,len(listOfSockets)):
-                    listOfSockets[sockets].sendall(bytearray(str(sockClient.getpeername()) + ': ' + data.decode('ascii'), 'ascii'))
-
+            send_message(addr, data.decode('ascii'))
