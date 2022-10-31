@@ -7,8 +7,9 @@ sockL.listen(1)
 listOfSockets = [sockL]
 print("Listening on port {}".format(port))
 def send_message(addr, message):
-    for sockets in range(1,len(listOfSockets)):
-            listOfSockets[sockets].sendall(bytearray('Client: {} {}'.format(addr, message), 'ascii'))
+    for sockets in listOfSockets:
+        if sockets != sockL:
+            sockets.sendall(bytearray('Client: {} {}'.format(addr, message), 'ascii'))
 while True:
     tup = select.select(listOfSockets, [], [])
     sock = tup[0][0]
