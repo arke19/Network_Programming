@@ -4,6 +4,7 @@ import tkinter.messagebox as tkmsgbox
 import tkinter.scrolledtext as tksctxt
 import socket
 
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -136,6 +137,10 @@ def disconnect():
 
 
     # your code here
+    g_bConnected = False
+    #g_sock.close()
+    printToMessages('Disconnected: {}'.format(g_app.ipPort.get()))
+
 
     # once disconnected, set buttons text to 'connect'
     g_app.connectButton['text'] = 'connect'
@@ -147,7 +152,17 @@ def tryToConnect():
     global g_bConnected
     global g_sock
 
+    ip = g_app.ipPort.get().split(':')[0]
+    port = int(g_app.ipPort.get().split(':')[1])
+
     g_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+    g_sock.settimeout(0.1)
+    g_sock.connect((ip, port))
+    g_bConnected = True
+
+    g_app.connectButton['text'] = 'disconnect'
+    printToMessages('Connected to: {}'.format(g_app.ipPort.get()))
+    
     # your code here
     # try to connect to the IP address and port number
     # as indicated by the text field g_app.ipPort
@@ -159,18 +174,26 @@ def tryToConnect():
 
 # attempt to send the message (in the text field g_app.textIn) to the server
 def sendMessage(master):
-
+    try:
+        g_sock.sendall(bytearray(g_app.textIn.get(), 'ascii'))
+    except socket.error:
+        disconnect()
     # your code here
     # a call to g_app.textIn.get() delivers the text field's content
     # if a socket.error occurrs, you may want to disconnect, in order
     # to put the program into a defined state
-    pass
 
 
 # poll messages
 def pollMessages():
     # reschedule the next polling event
     g_root.after(g_pollFreq, pollMessages)
+    if g_bConnected == True:
+        try:
+            data = g_sock.recv(1024)
+            printToMessages(data.decode('ascii'))
+        except socket.error:
+            pass
     
     # your code here
     # use the recv() function in non-blocking mode
