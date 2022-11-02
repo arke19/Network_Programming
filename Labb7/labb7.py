@@ -16,12 +16,12 @@ while True:
     if sock == sockL:
         (sockClient, addr) = sockL.accept()
         listOfSockets.append(sockClient)
-        send_message(addr, ' has connected\n')
+        send_message(addr, ' has connected')
     else:
         data = sock.recv(2048)
         if not data:
-            send_message(str(sockClient.getpeername()), ' has disconnected\n')
-            listOfSockets.remove(sockClient)
-            sockClient.close()
+            send_message(str(sock.getpeername()), ' has disconnected')
+            sock.close()
+            listOfSockets.remove(sock)
         else:
-            send_message(addr, data.decode('ascii'))
+            send_message(str(sock.getpeername()), data.decode('ascii'))
