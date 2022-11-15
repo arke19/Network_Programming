@@ -29,11 +29,12 @@ def makeHisto(byte_array):
 
 def makeProb(histo):
     prob_list = [0]*256
-    histo_max = len(byte_array)
+    byte_array_size = len(byte_array)
+    print("bytearray size =", len(byte_array))
     index = 0
 
     for byte in histo:
-        prob_list[index] = byte/histo_max
+        prob_list[index] = byte/byte_array_size
         index += 1
     
     return prob_list
@@ -63,8 +64,8 @@ t10 = 10*t1
 t1Code = zlib.compress(bytearray(t1, "utf-8"))
 t10Code = zlib.compress(bytearray(t10, "utf-8"))
 
-print("t1: ", len(t1Code))
-print("t10: ", len(t10Code))
+print("t1:", len(t1Code))
+print("t10:", len(t10Code))
 print(entropi(makeProb(makeHisto(bytearray(t1, "utf-8")))))
 print(entropi(makeProb(makeHisto(bytearray(t10, "utf-8")))))
 print(len(t1))
