@@ -30,7 +30,6 @@ def makeHisto(byte_array):
 def makeProb(histo):
     prob_list = [0]*256
     byte_array_size = len(byte_array)
-    print("bytearray size =", len(byte_array))
     index = 0
 
     for byte in histo:

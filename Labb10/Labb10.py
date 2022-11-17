@@ -27,9 +27,22 @@ find_nonseparator = re.findall(r"\S", txt)
 
 mtxt = "jox r.nohre@jth.hj.se, bjox@se, adam@example.com, jox@jox@jox.com."
 
-# (?<!\S) negative lookbehind assertion. to remove jox@jox@jox.com
-find_emailen = re.findall(r"(?<!\S)(?:\.\w+)@(?:\.\w+)", mtxt)
+# (?<!\S) negative lookbehind assertion. to remove jox@jox.com https://docs.python.org/3/library/re.html
+
+#first check that we're at the start of the string. then check for word, then it possible to add additional . + words. 
+# then check @ + word . word then additional  . + words  can be added
+
 find_email = re.findall(r'(?<!\S)\w+(?:\.\w+)*@\w+\.\w+(?:\.\w+)*', mtxt)
 
-print(find_emailen)
 print(find_email)
+
+
+f = open("Labb10/tabla.html", encoding="utf-8")
+txt = f.read()
+simpsons = re.findall(r'<td class=\"svtTablaTime\">\s(\d+\.\d+)\s<\/td>\s<td.*?>\s<h4.*?>\sSimpsons\s<\/h4>\s(?:<div.*?>\s)+<p.*>\s.*Säsong (\d*). Del (\d*) av (\d*).\s(.*)', txt)
+for item in simpsons:
+    print("-----------------------")
+    print("Tid:\t ", item[0])
+    print("Säsong:\t ", item[1])
+    print("Avsnitt: ", item[2]+"/"+item[3])
+    print("Handling: ",item[4])
