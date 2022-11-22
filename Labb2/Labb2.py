@@ -13,6 +13,7 @@ for line in read_file:
     score = int(line_split[4][0])
     if name != name_id:
         name_id[name] = id
+        id += 1
         print(name_id)
         print(" ")
 

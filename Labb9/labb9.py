@@ -14,6 +14,7 @@ code_compress_copy = zlib.compress(byte_array_copy)
 
 
 
+print(len(str(txt)))
 print(len(byte_array))
 print(len(byte_array_copy))
 print(len(code_compress))
@@ -39,6 +40,8 @@ def makeProb(histo):
     return prob_list
 
 #https://stackoverflow.com/questions/64803311/how-to-write-a-function-that-returns-probability-distributions-entropy-in-pytho
+
+
 def entropi(prob):
     entropy = 0
     for i in range(len(prob)):
@@ -46,9 +49,7 @@ def entropi(prob):
             entropy += prob[i] * math.log((1/prob[i]), 2) 
     return entropy
 
-histo = makeHisto(byte_array)
-probability = makeProb(histo)
-#print("histo",histo_in)
+probability = makeProb(makeHisto(byte_array))
 probability_sum = sum(probability, 0)
 print("probability",probability,"probability sum is",probability_sum)
 
@@ -72,3 +73,40 @@ print(len(t10))
 
 
 print(histo)
+
+
+print(entropi(makeProb(makeHisto(code_compress))))
+print(entropi(makeProb(makeHisto(code_compress_copy))))
+print(entropi(makeProb(makeHisto(byte_array))))
+print(entropi(makeProb(makeHisto(byte_array_copy))))
+
+
+"""
+9.2
+1c 
+Adding single characters to a string adds only a byte to the size of the string itself, but every string takes up 40 bytes on its own.
+
+The bytearray contains more bytes than the string because UTF-8 () uses 1-4 bytes to represent a character
+
+Can also be due to swedish letters not being in utf-8
+
+2d
+We can not expect it to be less than the entropy 4.6, because that is the average swedish bits/symbol.
+
+4c
+The shuffled bytearray is 30500 bytes and compressed its 19800 bytes, 158400 bits and 5.6 bits/symbol
+
+4d
+The unshuffled bytearray is 30500 bytes and compressed its 12800 bytes, 102400 bits and 3.9 bits/symbol
+
+4e
+The randomized compressed copy has the biggest bits/symbol, 
+and the compressed copy which was not randomized has the smallest bits/symbol. 
+This is because when it is compressed, 
+some pattern can be used to predict certain things in the array that was not shuffled.
+
+9.3
+b t1 is 68 bytes when compressed, and t10 is 78.
+c The difference between t1 and t10 is small because in t10 the pattern is the same, 
+just longer. This means that predicting what follows will be easy compress tool.
+"""
