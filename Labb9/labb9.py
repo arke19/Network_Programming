@@ -72,8 +72,6 @@ print(len(t1))
 print(len(t10))
 
 
-print(histo)
-
 
 print(entropi(makeProb(makeHisto(code_compress))))
 print(entropi(makeProb(makeHisto(code_compress_copy))))

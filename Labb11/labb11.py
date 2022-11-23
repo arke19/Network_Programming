@@ -76,7 +76,8 @@ def print_low_taskscore():
     for row in c.execute("SELECT SUM(score) as low_taskscore, task FROM scores GROUP BY task ORDER BY low_taskscore, task ASC LIMIT 10"):
         print(row)
 
-
+create_tables()
+insert_data()
 print_highscore()
 print_low_taskscore()
 
