@@ -37,9 +37,9 @@ class Application(tk.Frame):
         padder = tk.Label(self.groupCon, padx=5)
         padder.pack(side="left")
         #
-        #self.connectButton = tk.Button(self.groupCon,
-        #    command = connectButtonClick, width=10)
-        #self.connectButton.pack(side="left")
+        self.connectButton = tk.Button(self.groupCon,
+            command = connectButtonClick, width=10)
+        self.connectButton.pack(side="left")
         #
         padder = tk.Label(self.groupCon, padx=1)
         padder.pack(side="left")
@@ -102,7 +102,7 @@ def connectHandler(master):
     if g_bConnected:
         disconnect()
     else:
-        tryToConnect()
+        connect()
 
 # a utility method to print to the message field        
 def printToMessages(message):
@@ -138,19 +138,31 @@ def myAddrFormat(addr):
 def disconnect():
     # we need to modify the following global variables
     global g_bConnected
-    
-
+    global messages_stream
+    if messages_stream != None:
+        messages_stream.close()
+    g_app.connectButton['text'] = 'subscribe'
+    g_bConnected = False
+    messages_stream = None
     
 # attempt to connect to server    
-def tryToConnect():
+def connect():
     global g_bConnected
+    global messages_stream
+    clearButtonClick()
+    messages_stream = ref.child('messages').listen(streamHandler)
+    g_app.connectButton['text'] = 'unsubscribe'
+    g_bConnected = True
+    
 
 
 
 # attempt to send the message (in the text field g_app.textIn) to the server
 def sendMessage(master):
-    message = {'name': master.ipPort.get(), 'text': master.textIn.get()}
-    ref.child('messages').push(message)
+    global messages_stream
+    if messages_stream != None:
+        message = {'name': master.ipPort.get(), 'text': master.textIn.get()}
+        ref.child('messages').push(message)
 
 def streamHandler(incomingData):
     if incomingData.event_type == 'put':
@@ -174,7 +186,7 @@ def handleMessage(message):
 
 # by default we are not connected
 g_bConnected = True
-
+messages_stream = None
 # set the delay between two consecutive calls to pollMessages
 g_pollFreq = 200 # in milliseconds
 
@@ -183,8 +195,7 @@ g_root = tk.Tk()
 g_app = Application(master=g_root)
 
 # make sure everything is set to the status 'disconnected' at the beginning
-disconnect()
-messages_stream = ref.child('messages').listen(streamHandler)
+connect()
 
 # if attempt to close the window, handle it in the on-closing method
 g_root.protocol("WM_DELETE_WINDOW", on_closing)
